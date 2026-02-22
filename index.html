@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      background: #E8E8E8;
+      min-height: 100vh;
+    }
+
+    /* ── PAGE HEADER ── */
+    #page-header {
+      text-align: center;
+      padding: 48px 20px 28px;
+    }
+    #page-header h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: 52px;
+      font-weight: 10;
+      color: #111;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+    #btn-download {
+      font-family: 'Space Mono', monospace;
+      font-size: 18px;
+      font-weight: 500;
+      color: #F5F0E8;        /* light text so it's readable on dark bg */
+      background: #2C2C2C;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      padding: 8px 22px;
+      border-radius: 12px;
+      transition: background 0.2s ease;   /* smooth hover */
+    }
+
+    #btn-download:hover {
+      background: #555555;   /* lighter dark on hover */
+      color: #F5F0E8;
+      text-decoration: none;
+    }
+    
+
+    /* ── PAGE WRAPPER ── */
+    #page-wrapper {
+      padding: 0 20px 72px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ── A4 RESUME SHEET ── */
+    #resume {
+      width: 210mm;
+      min-height: 297mm;
+      background: #fff;
+      padding: 14mm 17mm 14mm;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+      position: relative;
+    }
+
+    /* ── EDITABLE HIGHLIGHT ── */
+    [contenteditable] {
+      border-radius: 2px;
+      outline: none;
+      transition: background 0.12s;
+    }
+    [contenteditable]:hover { background: rgba(36,113,163,0.07); outline: 1px dashed #99bbdd; }
+    [contenteditable]:focus { background: rgba(36,113,163,0.09); outline: 1.5px solid #2471a3; }
+
+    /* ── HEADER ── */
+    .r-name {
+      text-align: center;
+      font-size: 22pt;
+      font-weight: bold;
+      line-height: 1.15;
+      margin-bottom: 3px;
+    }
+    .r-contact {
+      text-align: center;
+      font-size: 9.5pt;
+      color: #111;
+      margin-bottom: 2px;
+    }
+    .r-links {
+      text-align: center;
+      font-size: 9.5pt;
+      color: #1a5276;
+    }
+
+    /* ── SECTION ── */
+    .r-section { margin-top: 26px; }
+    .r-section-title {
+      font-size: 9.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      border-bottom: 1.5px solid #111;
+      padding-bottom: 2px;
+      margin-bottom: 5px;
+    }
+
+    /* ── SKILLS TABLE ── */
+    .skills-grid { width: 100%; border-collapse: collapse; }
+    .skills-grid td {
+      vertical-align: top;
+      font-size: 11pt;
+      padding: 1.5px 0;
+      line-height: 1.35;
+    }
+    .skill-cat {
+      font-weight: bold;
+      width: 150px;
+      min-width: 150px;
+      padding-right: 6px;
+    }
+    .skill-ctrl-col { width: 20px; text-align: right; }
+    .skill-remove-btn { display: none; }
+    tr:hover .skill-remove-btn { display: inline-block; }
+
+    /* ── EXPERIENCE ── */
+    .exp-entry {
+      margin-bottom: 6px;
+      position: relative;
+    }
+    .exp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+    .exp-header-left {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    .exp-role { font-style: italic; font-weight: bold; font-size: 10.5pt; }
+    .exp-sep  { color: #444; margin: 0 5px; font-style: normal; font-weight: normal; }
+    .exp-company { font-size: 10.5pt; }
+    .exp-date { font-size: 10.5pt; white-space: nowrap; flex-shrink: 0; }
+
+    .exp-bullets {
+      margin: 2px 0 0 16px;
+      list-style-type: disc;
+    }
+    .exp-bullets li {
+      font-size: 10.5pt;
+      line-height: 1.38;
+      text-align: justify;
+      margin-bottom: 1.5px;
+    }
+
+    /* ── ENTRY CONTROLS (screen only) ── */
+    .entry-controls {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .exp-entry:hover .entry-controls { display: flex; }
+
+    .ctrl-label {
+      font-family: system-ui, sans-serif;
+      font-size: 10px;
+      color: #8899aa;
+      margin-right: 2px;
+    }
+    .cbtn {
+      font-family: system-ui, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .cbtn-green  { background: #1e8449; color: #fff; }
+    .cbtn-red    { background: #a93226; color: #fff; }
+    .cbtn-orange { background: #ca6f1e; color: #fff; }
+    .cbtn:hover  { opacity: 0.85; }
+
+    /* ── EDUCATION ── */
+    .edu-entry {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 2px;
+      font-size: 11pt;
+    }
+    .edu-institution { flex: 1; }
+    .edu-year { margin: 0 14px; flex-shrink: 0; }
+    .edu-degree { font-weight: bold; }
+    .edu-remove-btn { display: none; margin-left: 10px; flex-shrink: 0; }
+    .edu-entry:hover .edu-remove-btn { display: inline-block; }
+
+    /* ── ADD ROW BUTTONS ── */
+    .add-row-wrap { margin-top: 4px; }
+    .add-row-btn {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      padding: 3px 14px;
+      border: 1.5px dashed #2C2C2C;
+      background: transparent;
+      color: #2C2C2C;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .add-row-btn:hover { background: rgba(44,44,44,0.08); }
+
+    /* ── PRINT ── */
+    @page { size: A4; margin: 0; }
+
+    @media print {
+      html, body { background: #fff !important; }
+      #page-header { display: none !important; }
+      #page-wrapper { margin: 0 !important; padding: 0 !important; }
+      #resume {
+        width: 210mm !important;
+        min-height: 0 !important;
+        box-shadow: none !important;
+        padding: 14mm 17mm !important;
+      }
+      [contenteditable]:hover,
+      [contenteditable]:focus {
+        background: transparent !important;
+        outline: none !important;
+      }
+      .entry-controls,
+      .edu-remove-btn,
+      .skill-remove-btn,
+      .add-row-wrap,
+      #add-exp-wrap { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── PAGE HEADER ── -->
+<div id="page-header">
+  <h1>build your resume</h1>
+  <button id="btn-download" onclick="window.print()">download pdf</button>
+</div>
+
+<!-- ── RESUME ── -->
+<div id="page-wrapper">
+<div id="resume">
+
+  <!-- HEADER -->
+  <div class="r-name" contenteditable="true" data-sl>Marcus Aurelius</div>
+  <div class="r-contact" contenteditable="true" data-sl>Rome, Italy &nbsp;|&nbsp; +39 06 000 0161 &nbsp;|&nbsp; marcus.aurelius@roman-empire.gov</div>
+  <div class="r-links" contenteditable="true" data-sl>linkedin.com/in/marcusaurelius &nbsp;|&nbsp; github.com/stoic-emperor</div>
+
+  <!-- SKILLS -->
+  <div class="r-section">
+    <div class="r-section-title">Skills</div>
+    <table class="skills-grid"><tbody id="skills-body">
+      <tr>
+        <td class="skill-cat" contenteditable="true">Languages:</td>
+        <td contenteditable="true">Latin (native), Greek (fluent), Rhetoric, Koine Greek</td>
+        <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
+      </tr>
+      <tr>
+        <td class="skill-cat" contenteditable="true">Leadership:</td>
+        <td contenteditable="true">Senate management, provincial governance, military command, succession planning, crisis diplomacy</td>
+        <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
+      </tr>
+      <tr>
+        <td class="skill-cat" contenteditable="true">Philosophy:</td>
+        <td contenteditable="true">Stoicism, Socratic method, ethics, logic, virtue theory, applied mindfulness, resilience frameworks</td>
+        <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
+      </tr>
+      <tr>
+        <td class="skill-cat" contenteditable="true">Military:</td>
+        <td contenteditable="true">Legion tactics, siege warfare, border defense, alliance negotiation, field medicine coordination</td>
+        <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
+      </tr>
+      <tr>
+        <td class="skill-cat" contenteditable="true">Others:</td>
+        <td contenteditable="true">Long-form journaling, public speaking, legal arbitration, infrastructure policy, aqueduct oversight</td>
+        <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
+      </tr>
+    </tbody></table>
+    <div class="add-row-wrap">
+      <button class="add-row-btn" onclick="addSkillRow()">+ Add Skill Row</button>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="r-section">
+    <div class="r-section-title">Experience</div>
+    <div id="experience-container">
+
+      <!-- Entry 1 -->
+      <div class="exp-entry">
+        <div class="exp-header">
+          <div class="exp-header-left">
+            <span class="exp-role"    contenteditable="true">Emperor of Rome</span>
+            <span class="exp-sep">|</span>
+            <span class="exp-company" contenteditable="true">Roman Empire (Rome, Italy)</span>
+          </div>
+          <span class="exp-date" contenteditable="true" data-sl>161 AD – 180 AD</span>
+        </div>
+        <ul class="exp-bullets">
+          <li contenteditable="true">Administered governance of 5 million km² across 3 continents, overseeing taxation, legal reform, and provincial infrastructure, achieving sustained economic stability despite the Antonine Plague.</li>
+          <li contenteditable="true">Commanded multi-year military campaigns on the Danube frontier (Marcomannic Wars), personally leading legions and negotiating lasting peace treaties with Germanic tribes.</li>
+          <li contenteditable="true">Authored Meditations, a 12-volume internal leadership journal on Stoic philosophy, widely used as an executive coaching framework to this day.</li>
+        </ul>
+        <div class="entry-controls">
+          <span class="ctrl-label">bullets:</span>
+          <button class="cbtn cbtn-green"  onclick="addBullet(this)">+ add</button>
+          <button class="cbtn cbtn-red"    onclick="removeBullet(this)">− remove</button>
+          <span class="ctrl-label" style="margin-left:10px">entry:</span>
+          <button class="cbtn cbtn-orange" onclick="removeExp(this)">remove entry</button>
+        </div>
+      </div>
+
+      <!-- Entry 2 -->
+      <div class="exp-entry">
+        <div class="exp-header">
+          <div class="exp-header-left">
+            <span class="exp-role"    contenteditable="true">Co-Emperor &amp; Chief of Staff</span>
+            <span class="exp-sep">|</span>
+            <span class="exp-company" contenteditable="true">Roman Empire (Rome, Italy)</span>
+          </div>
+          <span class="exp-date" contenteditable="true" data-sl>161 AD – 169 AD</span>
+        </div>
+        <ul class="exp-bullets">
+          <li contenteditable="true">Co-led the empire alongside Lucius Verus, establishing a dual-leadership model that improved executive bandwidth and regional crisis response time.</li>
+          <li contenteditable="true">Oversaw the Parthian War campaign logistics, coordinating supply chains and troop deployments across 2,000 km, resulting in the annexation of Mesopotamia.</li>
+        </ul>
+        <div class="entry-controls">
+          <span class="ctrl-label">bullets:</span>
+          <button class="cbtn cbtn-green"  onclick="addBullet(this)">+ add</button>
+          <button class="cbtn cbtn-red"    onclick="removeBullet(this)">− remove</button>
+          <span class="ctrl-label" style="margin-left:10px">entry:</span>
+          <button class="cbtn cbtn-orange" onclick="removeExp(this)">remove entry</button>
+        </div>
+      </div>
+
+      <!-- Entry 3 -->
+      <div class="exp-entry">
+        <div class="exp-header">
+          <div class="exp-header-left">
+            <span class="exp-role"    contenteditable="true">Quaestor &amp; Policy Advisor</span>
+            <span class="exp-sep">|</span>
+            <span class="exp-company" contenteditable="true">Office of Emperor Antoninus Pius (Rome)</span>
+          </div>
+          <span class="exp-date" contenteditable="true" data-sl>139 AD – 161 AD</span>
+        </div>
+        <ul class="exp-bullets">
+          <li contenteditable="true">Served as designated successor and senior advisor, managing senatorial relations and drafting imperial edicts under direct mentorship of Emperor Antoninus Pius.</li>
+          <li contenteditable="true">Studied rhetoric under Fronto and philosophy under Epictetus' disciple Rusticus, building a cross-functional skill set in public administration and applied ethics.</li>
+          <li contenteditable="true">Developed legal frameworks for the humane treatment of slaves and expanded rights for citizens in the provinces, improving imperial approval ratings.</li>
+        </ul>
+        <div class="entry-controls">
+          <span class="ctrl-label">bullets:</span>
+          <button class="cbtn cbtn-green"  onclick="addBullet(this)">+ add</button>
+          <button class="cbtn cbtn-red"    onclick="removeBullet(this)">− remove</button>
+          <span class="ctrl-label" style="margin-left:10px">entry:</span>
+          <button class="cbtn cbtn-orange" onclick="removeExp(this)">remove entry</button>
+        </div>
+      </div>
+
+    </div><!-- #experience-container -->
+
+    <div class="add-row-wrap">
+      <button class="add-row-btn" onclick="addExp()">+ Add Experience Entry</button>
+    </div>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="r-section">
+    <div class="r-section-title">Education</div>
+    <div id="education-container">
+      <div class="edu-entry">
+        <span class="edu-institution" contenteditable="true">Tutored under Marcus Cornelius Fronto</span>
+        <span class="edu-year"        contenteditable="true" data-sl>145 AD</span>
+        <span class="edu-degree"      contenteditable="true">M.A. Rhetoric &amp; Oratory</span>
+        <button class="cbtn cbtn-red edu-remove-btn" onclick="removeEduEntry(this)">×</button>
+      </div>
+      <div class="edu-entry">
+        <span class="edu-institution" contenteditable="true">School of Junius Rusticus (Stoic tradition)</span>
+        <span class="edu-year"        contenteditable="true" data-sl>140 AD</span>
+        <span class="edu-degree"      contenteditable="true">B.A. Philosophy (Stoicism)</span>
+        <button class="cbtn cbtn-red edu-remove-btn" onclick="removeEduEntry(this)">×</button>
+      </div>
+      <div class="edu-entry">
+        <span class="edu-institution" contenteditable="true">Imperial Court, Rome</span>
+        <span class="edu-year"        contenteditable="true" data-sl>132 AD</span>
+        <span class="edu-degree"      contenteditable="true">B.A. Law &amp; Governance</span>
+        <button class="cbtn cbtn-red edu-remove-btn" onclick="removeEduEntry(this)">×</button>
+      </div>
+    </div>
+    <div class="add-row-wrap">
+      <button class="add-row-btn" onclick="addEduEntry()">+ Add Education Entry</button>
+    </div>
+  </div>
+
+</div><!-- #resume -->
+</div><!-- #page-wrapper -->
+
+<script>
+  // Prevent Enter (newlines) in single-line fields tagged with data-sl
+  document.querySelectorAll('[data-sl]').forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+  });
+
+  function addExp() {
+    const container = document.getElementById('experience-container');
+    const entry = document.createElement('div');
+    entry.className = 'exp-entry';
+    entry.innerHTML = `
+      <div class="exp-header">
+        <div class="exp-header-left">
+          <span class="exp-role"    contenteditable="true">Job Title</span>
+          <span class="exp-sep">|</span>
+          <span class="exp-company" contenteditable="true">Company (Location)</span>
+        </div>
+        <span class="exp-date" contenteditable="true">MM.YYYY – MM.YYYY</span>
+      </div>
+      <ul class="exp-bullets">
+        <li contenteditable="true">Describe your key accomplishment here.</li>
+      </ul>
+      <div class="entry-controls">
+        <span class="ctrl-label">bullets:</span>
+        <button class="cbtn cbtn-green"  onclick="addBullet(this)">+ add</button>
+        <button class="cbtn cbtn-red"    onclick="removeBullet(this)">− remove</button>
+        <span class="ctrl-label" style="margin-left:10px">entry:</span>
+        <button class="cbtn cbtn-orange" onclick="removeExp(this)">remove entry</button>
+      </div>`;
+    container.appendChild(entry);
+    // Focus role field
+    const role = entry.querySelector('.exp-role');
+    role.focus();
+    const r = document.createRange();
+    r.selectNodeContents(role);
+    r.collapse(false);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+  }
+
+  function removeExp(btn) {
+    const entries = document.querySelectorAll('#experience-container .exp-entry');
+    if (entries.length <= 1) return; // always keep at least one
+    btn.closest('.exp-entry').remove();
+  }
+
+  function addBullet(btn) {
+    const ul = btn.closest('.exp-entry').querySelector('.exp-bullets');
+    const li = document.createElement('li');
+    li.contentEditable = 'true';
+    li.textContent = 'New accomplishment.';
+    ul.appendChild(li);
+    li.focus();
+    const r = document.createRange();
+    r.selectNodeContents(li);
+    r.collapse(false);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+  }
+
+  function removeBullet(btn) {
+    const ul = btn.closest('.exp-entry').querySelector('.exp-bullets');
+    const items = ul.querySelectorAll('li');
+    if (items.length > 1) items[items.length - 1].remove();
+  }
+
+  // ── SKILLS ──
+  function addSkillRow() {
+    const tbody = document.getElementById('skills-body');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="skill-cat" contenteditable="true">Category:</td>
+      <td contenteditable="true">Skill 1, Skill 2, Skill 3</td>
+      <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>`;
+    tbody.appendChild(tr);
+    tr.querySelector('.skill-cat').focus();
+  }
+
+  function removeSkillRow(btn) {
+    const tbody = document.getElementById('skills-body');
+    if (tbody.querySelectorAll('tr').length <= 1) return;
+    btn.closest('tr').remove();
+  }
+
+  // ── EDUCATION ──
+  function addEduEntry() {
+    const container = document.getElementById('education-container');
+    const div = document.createElement('div');
+    div.className = 'edu-entry';
+    div.innerHTML = `
+      <span class="edu-institution" contenteditable="true">Institution Name</span>
+      <span class="edu-year"        contenteditable="true">YYYY</span>
+      <span class="edu-degree"      contenteditable="true">Degree, Field</span>
+      <button class="cbtn cbtn-red edu-remove-btn" onclick="removeEduEntry(this)">×</button>`;
+    container.appendChild(div);
+    div.querySelector('.edu-institution').focus();
+  }
+
+  function removeEduEntry(btn) {
+    const container = document.getElementById('education-container');
+    if (container.querySelectorAll('.edu-entry').length <= 1) return;
+    btn.closest('.edu-entry').remove();
+  }
+</script>
+</body>
+</html>
