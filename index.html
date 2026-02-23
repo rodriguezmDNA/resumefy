@@ -181,6 +181,29 @@
       margin-bottom: 1.5px;
     }
 
+    /* ── CUSTOM SECTION ── */
+    .custom-section-header {
+      display: flex;
+      align-items: center;
+      border-bottom: 1.5px solid #111;
+      margin-bottom: 5px;
+      padding-bottom: 2px;
+    }
+    .custom-section-header .r-section-title {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+      flex: 1;
+    }
+    .section-remove-btn {
+      display: none;
+      font-size: 10px;
+      padding: 2px 8px;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .custom-section:hover .section-remove-btn { display: inline-block; }
+
     /* ── ENTRY CONTROLS (screen only) ── */
     .entry-controls {
       display: none;
@@ -261,6 +284,7 @@
       .entry-controls,
       .edu-remove-btn,
       .skill-remove-btn,
+      .section-remove-btn,
       .add-row-wrap,
       #add-exp-wrap { display: none !important; }
     }
@@ -429,10 +453,24 @@
     </div>
   </div>
 
+
+  <!-- CUSTOM SECTIONS (added dynamically) -->
+  <div id="custom-sections-container"></div>
+
+  <div class="add-row-wrap" style="margin-top: 12px; text-align: center;">
+    <button class="add-row-btn" onclick="addCustomSection()">+ Add Section</button>
+  </div>
+
 </div><!-- #resume -->
 </div><!-- #page-wrapper -->
 
 <script>
+  // TODO: if resume content overflows beyond 1 A4 page (297mm / scrollHeight > offsetHeight),
+  // flash the #resume background orange as a visual overflow warning.
+  // TODO: allow inserting/moving custom sections between fixed sections (Skills, Experience,
+  // Education). Approach: insert-zone dividers between all sections + insertAdjacentElement;
+  // optional ↑↓ buttons on custom sections for reordering.
+
   // Prevent Enter (newlines) in single-line fields tagged with data-sl
   document.querySelectorAll('[data-sl]').forEach(el => {
     el.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
@@ -534,6 +572,73 @@
     const container = document.getElementById('education-container');
     if (container.querySelectorAll('.edu-entry').length <= 1) return;
     btn.closest('.edu-entry').remove();
+  }
+
+  // ── CUSTOM SECTIONS ──
+  const CUSTOM_ENTRY_TEMPLATE = `
+    <div class="exp-header">
+      <div class="exp-header-left">
+        <span class="exp-role"    contenteditable="true">Title</span>
+        <span class="exp-sep">|</span>
+        <span class="exp-company" contenteditable="true">Subtitle / Details</span>
+      </div>
+      <span class="exp-date" contenteditable="true">Date</span>
+    </div>
+    <ul class="exp-bullets">
+      <li contenteditable="true">Describe your accomplishment or detail here.</li>
+    </ul>
+    <div class="entry-controls">
+      <span class="ctrl-label">bullets:</span>
+      <button class="cbtn cbtn-green"  onclick="addBullet(this)">+ add</button>
+      <button class="cbtn cbtn-red"    onclick="removeBullet(this)">− remove</button>
+      <span class="ctrl-label" style="margin-left:10px">entry:</span>
+      <button class="cbtn cbtn-orange" onclick="removeCustomEntry(this)">remove entry</button>
+    </div>`;
+
+  function addCustomSection() {
+    const container = document.getElementById('custom-sections-container');
+    const section = document.createElement('div');
+    section.className = 'r-section custom-section';
+    section.innerHTML = `
+      <div class="custom-section-header">
+        <div class="r-section-title" contenteditable="true">Section Title</div>
+        <button class="cbtn cbtn-red section-remove-btn" onclick="removeCustomSection(this)">remove section</button>
+      </div>
+      <div class="custom-entries">
+        <div class="exp-entry">${CUSTOM_ENTRY_TEMPLATE}</div>
+      </div>
+      <div class="add-row-wrap">
+        <button class="add-row-btn" onclick="addCustomEntry(this)">+ Add Entry</button>
+      </div>`;
+    container.appendChild(section);
+    const title = section.querySelector('.r-section-title');
+    title.focus();
+    document.execCommand('selectAll', false, null);
+  }
+
+  function removeCustomSection(btn) {
+    btn.closest('.custom-section').remove();
+  }
+
+  function addCustomEntry(btn) {
+    const entriesContainer = btn.closest('.custom-section').querySelector('.custom-entries');
+    const entry = document.createElement('div');
+    entry.className = 'exp-entry';
+    entry.innerHTML = CUSTOM_ENTRY_TEMPLATE;
+    entriesContainer.appendChild(entry);
+    const role = entry.querySelector('.exp-role');
+    role.focus();
+    const r = document.createRange();
+    r.selectNodeContents(role);
+    r.collapse(false);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+  }
+
+  function removeCustomEntry(btn) {
+    const entriesContainer = btn.closest('.custom-section').querySelector('.custom-entries');
+    if (entriesContainer.querySelectorAll('.exp-entry').length <= 1) return;
+    btn.closest('.exp-entry').remove();
   }
 </script>
 </body>
