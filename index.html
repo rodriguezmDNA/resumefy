@@ -204,6 +204,31 @@
     }
     .custom-section:hover .section-remove-btn { display: inline-block; }
 
+    /* ── DRAG TO REORDER ── */
+    .drag-handle {
+      cursor: grab;
+      color: #ccc;
+      font-size: 11px;
+      padding: 0 5px 0 0;
+      user-select: none;
+      display: none;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .drag-handle:active { cursor: grabbing; }
+    .r-section:hover > .r-section-title .drag-handle,
+    .r-section:hover > .custom-section-header .drag-handle { display: inline; }
+    .exp-entry:hover > .exp-header .drag-handle { display: inline; }
+    .exp-bullets li:hover .drag-handle { display: inline; }
+    [data-drag-level].dragging { opacity: 0.35; }
+    .drop-indicator {
+      height: 2px;
+      background: #2471a3;
+      border-radius: 1px;
+      pointer-events: none;
+      margin: 1px 0;
+    }
+
     /* ── ENTRY CONTROLS (screen only) ── */
     .entry-controls {
       display: none;
@@ -285,6 +310,8 @@
       .edu-remove-btn,
       .skill-remove-btn,
       .section-remove-btn,
+      .drag-handle,
+      .drop-indicator,
       .add-row-wrap,
       #add-exp-wrap { display: none !important; }
     }
@@ -308,8 +335,8 @@
   <div class="r-links" contenteditable="true" data-sl>linkedin.com/in/marcusaurelius &nbsp;|&nbsp; github.com/stoic-emperor</div>
 
   <!-- SKILLS -->
-  <div class="r-section">
-    <div class="r-section-title">Skills</div>
+  <div class="r-section" data-drag-level="section">
+    <div class="r-section-title" style="display:flex;align-items:center"><span class="drag-handle">⠿</span>Skills</div>
     <table class="skills-grid"><tbody id="skills-body">
       <tr>
         <td class="skill-cat" contenteditable="true">Languages:</td>
@@ -343,24 +370,24 @@
   </div>
 
   <!-- EXPERIENCE -->
-  <div class="r-section">
-    <div class="r-section-title">Experience</div>
+  <div class="r-section" data-drag-level="section">
+    <div class="r-section-title" style="display:flex;align-items:center"><span class="drag-handle">⠿</span>Experience</div>
     <div id="experience-container">
 
       <!-- Entry 1 -->
-      <div class="exp-entry">
+      <div class="exp-entry" data-drag-level="entry">
         <div class="exp-header">
           <div class="exp-header-left">
-            <span class="exp-role"    contenteditable="true">Emperor of Rome</span>
+            <span class="drag-handle">⠿</span><span class="exp-role"    contenteditable="true">Emperor of Rome</span>
             <span class="exp-sep">|</span>
             <span class="exp-company" contenteditable="true">Roman Empire (Rome, Italy)</span>
           </div>
           <span class="exp-date" contenteditable="true" data-sl>161 AD – 180 AD</span>
         </div>
         <ul class="exp-bullets">
-          <li contenteditable="true">Administered governance of 5 million km² across 3 continents, overseeing taxation, legal reform, and provincial infrastructure, achieving sustained economic stability despite the Antonine Plague.</li>
-          <li contenteditable="true">Commanded multi-year military campaigns on the Danube frontier (Marcomannic Wars), personally leading legions and negotiating lasting peace treaties with Germanic tribes.</li>
-          <li contenteditable="true">Authored Meditations, a 12-volume internal leadership journal on Stoic philosophy, widely used as an executive coaching framework to this day.</li>
+          <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Administered governance of 5 million km² across 3 continents, overseeing taxation, legal reform, and provincial infrastructure, achieving sustained economic stability despite the Antonine Plague.</li>
+          <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Commanded multi-year military campaigns on the Danube frontier (Marcomannic Wars), personally leading legions and negotiating lasting peace treaties with Germanic tribes.</li>
+          <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Authored Meditations, a 12-volume internal leadership journal on Stoic philosophy, widely used as an executive coaching framework to this day.</li>
         </ul>
         <div class="entry-controls">
           <span class="ctrl-label">bullets:</span>
@@ -372,18 +399,18 @@
       </div>
 
       <!-- Entry 2 -->
-      <div class="exp-entry">
+      <div class="exp-entry" data-drag-level="entry">
         <div class="exp-header">
           <div class="exp-header-left">
-            <span class="exp-role"    contenteditable="true">Co-Emperor &amp; Chief of Staff</span>
+            <span class="drag-handle">⠿</span><span class="exp-role"    contenteditable="true">Co-Emperor &amp; Chief of Staff</span>
             <span class="exp-sep">|</span>
             <span class="exp-company" contenteditable="true">Roman Empire (Rome, Italy)</span>
           </div>
           <span class="exp-date" contenteditable="true" data-sl>161 AD – 169 AD</span>
         </div>
         <ul class="exp-bullets">
-          <li contenteditable="true">Co-led the empire alongside Lucius Verus, establishing a dual-leadership model that improved executive bandwidth and regional crisis response time.</li>
-          <li contenteditable="true">Oversaw the Parthian War campaign logistics, coordinating supply chains and troop deployments across 2,000 km, resulting in the annexation of Mesopotamia.</li>
+          <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Co-led the empire alongside Lucius Verus, establishing a dual-leadership model that improved executive bandwidth and regional crisis response time.</li>
+          <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Oversaw the Parthian War campaign logistics, coordinating supply chains and troop deployments across 2,000 km, resulting in the annexation of Mesopotamia.</li>
         </ul>
         <div class="entry-controls">
           <span class="ctrl-label">bullets:</span>
@@ -395,19 +422,19 @@
       </div>
 
       <!-- Entry 3 -->
-      <div class="exp-entry">
+      <div class="exp-entry" data-drag-level="entry">
         <div class="exp-header">
           <div class="exp-header-left">
-            <span class="exp-role"    contenteditable="true">Quaestor &amp; Policy Advisor</span>
+            <span class="drag-handle">⠿</span><span class="exp-role"    contenteditable="true">Quaestor &amp; Policy Advisor</span>
             <span class="exp-sep">|</span>
             <span class="exp-company" contenteditable="true">Office of Emperor Antoninus Pius (Rome)</span>
           </div>
           <span class="exp-date" contenteditable="true" data-sl>139 AD – 161 AD</span>
         </div>
         <ul class="exp-bullets">
-          <li contenteditable="true">Served as designated successor and senior advisor, managing senatorial relations and drafting imperial edicts under direct mentorship of Emperor Antoninus Pius.</li>
-          <li contenteditable="true">Studied rhetoric under Fronto and philosophy under Epictetus' disciple Rusticus, building a cross-functional skill set in public administration and applied ethics.</li>
-          <li contenteditable="true">Developed legal frameworks for the humane treatment of slaves and expanded rights for citizens in the provinces, improving imperial approval ratings.</li>
+          <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Served as designated successor and senior advisor, managing senatorial relations and drafting imperial edicts under direct mentorship of Emperor Antoninus Pius.</li>
+          <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Studied rhetoric under Fronto and philosophy under Epictetus' disciple Rusticus, building a cross-functional skill set in public administration and applied ethics.</li>
+          <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Developed legal frameworks for the humane treatment of slaves and expanded rights for citizens in the provinces, improving imperial approval ratings.</li>
         </ul>
         <div class="entry-controls">
           <span class="ctrl-label">bullets:</span>
@@ -426,8 +453,8 @@
   </div>
 
   <!-- EDUCATION -->
-  <div class="r-section">
-    <div class="r-section-title">Education</div>
+  <div class="r-section" data-drag-level="section">
+    <div class="r-section-title" style="display:flex;align-items:center"><span class="drag-handle">⠿</span>Education</div>
     <div id="education-container">
       <div class="edu-entry">
         <span class="edu-institution" contenteditable="true">Tutored under Marcus Cornelius Fronto</span>
@@ -480,17 +507,18 @@
     const container = document.getElementById('experience-container');
     const entry = document.createElement('div');
     entry.className = 'exp-entry';
+    entry.dataset.dragLevel = 'entry';
     entry.innerHTML = `
       <div class="exp-header">
         <div class="exp-header-left">
-          <span class="exp-role"    contenteditable="true">Job Title</span>
+          <span class="drag-handle">⠿</span><span class="exp-role"    contenteditable="true">Job Title</span>
           <span class="exp-sep">|</span>
           <span class="exp-company" contenteditable="true">Company (Location)</span>
         </div>
         <span class="exp-date" contenteditable="true">MM.YYYY – MM.YYYY</span>
       </div>
       <ul class="exp-bullets">
-        <li contenteditable="true">Describe your key accomplishment here.</li>
+        <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Describe your key accomplishment here.</li>
       </ul>
       <div class="entry-controls">
         <span class="ctrl-label">bullets:</span>
@@ -520,7 +548,13 @@
     const ul = btn.closest('.exp-entry').querySelector('.exp-bullets');
     const li = document.createElement('li');
     li.contentEditable = 'true';
-    li.textContent = 'New accomplishment.';
+    li.dataset.dragLevel = 'bullet';
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.contentEditable = 'false';
+    handle.textContent = '⠿';
+    li.appendChild(handle);
+    li.appendChild(document.createTextNode('New accomplishment.'));
     ul.appendChild(li);
     li.focus();
     const r = document.createRange();
@@ -578,14 +612,14 @@
   const CUSTOM_ENTRY_TEMPLATE = `
     <div class="exp-header">
       <div class="exp-header-left">
-        <span class="exp-role"    contenteditable="true">Title</span>
+        <span class="drag-handle">⠿</span><span class="exp-role"    contenteditable="true">Title</span>
         <span class="exp-sep">|</span>
         <span class="exp-company" contenteditable="true">Subtitle / Details</span>
       </div>
       <span class="exp-date" contenteditable="true">Date</span>
     </div>
     <ul class="exp-bullets">
-      <li contenteditable="true">Describe your accomplishment or detail here.</li>
+      <li contenteditable="true" data-drag-level="bullet"><span class="drag-handle" contenteditable="false">⠿</span>Describe your accomplishment or detail here.</li>
     </ul>
     <div class="entry-controls">
       <span class="ctrl-label">bullets:</span>
@@ -599,13 +633,14 @@
     const container = document.getElementById('custom-sections-container');
     const section = document.createElement('div');
     section.className = 'r-section custom-section';
+    section.dataset.dragLevel = 'section';
     section.innerHTML = `
       <div class="custom-section-header">
-        <div class="r-section-title" contenteditable="true">Section Title</div>
+        <span class="drag-handle">⠿</span><div class="r-section-title" contenteditable="true">Section Title</div>
         <button class="cbtn cbtn-red section-remove-btn" onclick="removeCustomSection(this)">remove section</button>
       </div>
       <div class="custom-entries">
-        <div class="exp-entry">${CUSTOM_ENTRY_TEMPLATE}</div>
+        <div class="exp-entry" data-drag-level="entry">${CUSTOM_ENTRY_TEMPLATE}</div>
       </div>
       <div class="add-row-wrap">
         <button class="add-row-btn" onclick="addCustomEntry(this)">+ Add Entry</button>
@@ -624,6 +659,7 @@
     const entriesContainer = btn.closest('.custom-section').querySelector('.custom-entries');
     const entry = document.createElement('div');
     entry.className = 'exp-entry';
+    entry.dataset.dragLevel = 'entry';
     entry.innerHTML = CUSTOM_ENTRY_TEMPLATE;
     entriesContainer.appendChild(entry);
     const role = entry.querySelector('.exp-role');
@@ -640,6 +676,79 @@
     if (entriesContainer.querySelectorAll('.exp-entry').length <= 1) return;
     btn.closest('.exp-entry').remove();
   }
+
+  // ── DRAG TO REORDER ──
+  (function () {
+    const resume = document.getElementById('resume');
+    let draggedEl = null;
+    let indicator = null;
+
+    function getIndicator() {
+      if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.className = 'drop-indicator';
+      }
+      return indicator;
+    }
+
+    function removeIndicator() {
+      if (indicator && indicator.parentNode) indicator.remove();
+    }
+
+    function getDragTarget(el, level) {
+      return el.closest(`[data-drag-level="${level}"]`);
+    }
+
+    function sameScope(a, b, level) {
+      if (level === 'section') return true;
+      if (level === 'entry')   return a.parentElement === b.parentElement;
+      if (level === 'bullet')  return a.closest('.exp-entry') === b.closest('.exp-entry');
+      return false;
+    }
+
+    resume.addEventListener('dragstart', e => {
+      if (!e.target.classList.contains('drag-handle')) { e.preventDefault(); return; }
+      draggedEl = e.target.closest('[data-drag-level]');
+      if (!draggedEl) return;
+      draggedEl.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', draggedEl.dataset.dragLevel);
+    });
+
+    resume.addEventListener('dragend', () => {
+      draggedEl?.classList.remove('dragging');
+      draggedEl = null;
+      removeIndicator();
+    });
+
+    resume.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (!draggedEl) return;
+      const level = draggedEl.dataset.dragLevel;
+      const target = getDragTarget(e.target, level);
+      if (!target || target === draggedEl || !sameScope(draggedEl, target, level)) {
+        removeIndicator(); return;
+      }
+      const rect = target.getBoundingClientRect();
+      const above = e.clientY < rect.top + rect.height / 2;
+      const ind = getIndicator();
+      target.parentElement.insertBefore(ind, above ? target : target.nextSibling);
+    });
+
+    resume.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!draggedEl) return;
+      const level = draggedEl.dataset.dragLevel;
+      const target = getDragTarget(e.target, level);
+      if (!target || target === draggedEl || !sameScope(draggedEl, target, level)) {
+        removeIndicator(); return;
+      }
+      const rect = target.getBoundingClientRect();
+      const above = e.clientY < rect.top + rect.height / 2;
+      target.parentElement.insertBefore(draggedEl, above ? target : target.nextSibling);
+      removeIndicator();
+    });
+  })();
 </script>
 </body>
 
