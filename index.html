@@ -686,6 +686,11 @@
     const resume = document.getElementById('resume');
     let draggedEl = null;
     let indicator = null;
+    let pendingHandle = null; // track mousedown target since dragstart e.target is the draggable container, not the clicked child
+
+    resume.addEventListener('mousedown', e => {
+      pendingHandle = e.target.classList.contains('drag-handle') ? e.target : null;
+    });
 
     function getIndicator() {
       if (!indicator) {
@@ -711,9 +716,10 @@
     }
 
     resume.addEventListener('dragstart', e => {
-      if (!e.target.classList.contains('drag-handle')) { e.preventDefault(); return; }
-      draggedEl = e.target.closest('[data-drag-level]');
-      if (!draggedEl) return;
+      if (!pendingHandle) { e.preventDefault(); return; }
+      draggedEl = pendingHandle.closest('[data-drag-level]');
+      pendingHandle = null;
+      if (!draggedEl) { e.preventDefault(); return; }
       draggedEl.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/plain', draggedEl.dataset.dragLevel);
