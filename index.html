@@ -144,6 +144,7 @@
       min-width: 150px;
       padding-right: 6px;
     }
+    .skill-drag-col { width: 16px; padding: 0; }
     .skill-ctrl-col { width: 20px; text-align: right; }
     .skill-remove-btn { display: none; }
     tr:hover .skill-remove-btn { display: inline-block; }
@@ -220,6 +221,8 @@
     .r-section:hover > .custom-section-header .drag-handle { display: inline; }
     .exp-entry:hover > .exp-header .drag-handle { display: inline; }
     .exp-bullets li:hover .drag-handle { display: inline; }
+    #skills-body tr:hover .drag-handle { display: inline; }
+    .edu-entry:hover .drag-handle { display: inline; }
     [data-drag-level].dragging { opacity: 0.35; }
     .drop-indicator {
       height: 2px;
@@ -338,27 +341,32 @@
   <div class="r-section" data-drag-level="section" draggable="true">
     <div class="r-section-title" style="display:flex;align-items:center"><span class="drag-handle">⠿</span>Skills</div>
     <table class="skills-grid"><tbody id="skills-body">
-      <tr>
+      <tr data-drag-level="skill-row" draggable="true">
+        <td class="skill-drag-col"><span class="drag-handle">⠿</span></td>
         <td class="skill-cat" contenteditable="true">Languages:</td>
         <td contenteditable="true">Latin (native), Greek (fluent), Rhetoric, Koine Greek</td>
         <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
       </tr>
-      <tr>
+      <tr data-drag-level="skill-row" draggable="true">
+        <td class="skill-drag-col"><span class="drag-handle">⠿</span></td>
         <td class="skill-cat" contenteditable="true">Leadership:</td>
         <td contenteditable="true">Senate management, provincial governance, military command, succession planning, crisis diplomacy</td>
         <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
       </tr>
-      <tr>
+      <tr data-drag-level="skill-row" draggable="true">
+        <td class="skill-drag-col"><span class="drag-handle">⠿</span></td>
         <td class="skill-cat" contenteditable="true">Philosophy:</td>
         <td contenteditable="true">Stoicism, Socratic method, ethics, logic, virtue theory, applied mindfulness, resilience frameworks</td>
         <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
       </tr>
-      <tr>
+      <tr data-drag-level="skill-row" draggable="true">
+        <td class="skill-drag-col"><span class="drag-handle">⠿</span></td>
         <td class="skill-cat" contenteditable="true">Military:</td>
         <td contenteditable="true">Legion tactics, siege warfare, border defense, alliance negotiation, field medicine coordination</td>
         <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
       </tr>
-      <tr>
+      <tr data-drag-level="skill-row" draggable="true">
+        <td class="skill-drag-col"><span class="drag-handle">⠿</span></td>
         <td class="skill-cat" contenteditable="true">Others:</td>
         <td contenteditable="true">Long-form journaling, public speaking, legal arbitration, infrastructure policy, aqueduct oversight</td>
         <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>
@@ -456,19 +464,22 @@
   <div class="r-section" data-drag-level="section" draggable="true">
     <div class="r-section-title" style="display:flex;align-items:center"><span class="drag-handle">⠿</span>Education</div>
     <div id="education-container">
-      <div class="edu-entry">
+      <div class="edu-entry" data-drag-level="edu-entry" draggable="true">
+        <span class="drag-handle">⠿</span>
         <span class="edu-institution" contenteditable="true">Tutored under Marcus Cornelius Fronto</span>
         <span class="edu-year"        contenteditable="true" data-sl>145 AD</span>
         <span class="edu-degree"      contenteditable="true">M.A. Rhetoric &amp; Oratory</span>
         <button class="cbtn cbtn-red edu-remove-btn" onclick="removeEduEntry(this)">×</button>
       </div>
-      <div class="edu-entry">
+      <div class="edu-entry" data-drag-level="edu-entry" draggable="true">
+        <span class="drag-handle">⠿</span>
         <span class="edu-institution" contenteditable="true">School of Junius Rusticus (Stoic tradition)</span>
         <span class="edu-year"        contenteditable="true" data-sl>140 AD</span>
         <span class="edu-degree"      contenteditable="true">B.A. Philosophy (Stoicism)</span>
         <button class="cbtn cbtn-red edu-remove-btn" onclick="removeEduEntry(this)">×</button>
       </div>
-      <div class="edu-entry">
+      <div class="edu-entry" data-drag-level="edu-entry" draggable="true">
+        <span class="drag-handle">⠿</span>
         <span class="edu-institution" contenteditable="true">Imperial Court, Rome</span>
         <span class="edu-year"        contenteditable="true" data-sl>132 AD</span>
         <span class="edu-degree"      contenteditable="true">B.A. Law &amp; Governance</span>
@@ -576,7 +587,10 @@
   function addSkillRow() {
     const tbody = document.getElementById('skills-body');
     const tr = document.createElement('tr');
+    tr.dataset.dragLevel = 'skill-row';
+    tr.draggable = true;
     tr.innerHTML = `
+      <td class="skill-drag-col"><span class="drag-handle">⠿</span></td>
       <td class="skill-cat" contenteditable="true">Category:</td>
       <td contenteditable="true">Skill 1, Skill 2, Skill 3</td>
       <td class="skill-ctrl-col"><button class="cbtn cbtn-red skill-remove-btn" onclick="removeSkillRow(this)">×</button></td>`;
@@ -595,7 +609,10 @@
     const container = document.getElementById('education-container');
     const div = document.createElement('div');
     div.className = 'edu-entry';
+    div.dataset.dragLevel = 'edu-entry';
+    div.draggable = true;
     div.innerHTML = `
+      <span class="drag-handle">⠿</span>
       <span class="edu-institution" contenteditable="true">Institution Name</span>
       <span class="edu-year"        contenteditable="true">YYYY</span>
       <span class="edu-degree"      contenteditable="true">Degree, Field</span>
@@ -685,23 +702,31 @@
   (function () {
     const resume = document.getElementById('resume');
     let draggedEl = null;
-    let indicator = null;
+    let indicators = {}; // keyed by level — skill-row needs a <tr>, others use <div>
     let pendingHandle = null; // track mousedown target since dragstart e.target is the draggable container, not the clicked child
 
     resume.addEventListener('mousedown', e => {
       pendingHandle = e.target.classList.contains('drag-handle') ? e.target : null;
     });
 
-    function getIndicator() {
-      if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.className = 'drop-indicator';
+    function getIndicator(level) {
+      if (!indicators[level]) {
+        const tag = level === 'skill-row' ? 'tr' : 'div';
+        const el = document.createElement(tag);
+        el.className = 'drop-indicator';
+        if (tag === 'tr') {
+          const td = document.createElement('td');
+          td.colSpan = 4;
+          td.style.cssText = 'padding:0;height:2px;background:#2471a3';
+          el.appendChild(td);
+        }
+        indicators[level] = el;
       }
-      return indicator;
+      return indicators[level];
     }
 
     function removeIndicator() {
-      if (indicator && indicator.parentNode) indicator.remove();
+      Object.values(indicators).forEach(ind => { if (ind.parentNode) ind.remove(); });
     }
 
     function getDragTarget(el, level) {
@@ -710,9 +735,8 @@
 
     function sameScope(a, b, level) {
       if (level === 'section') return true;
-      if (level === 'entry')   return a.parentElement === b.parentElement;
       if (level === 'bullet')  return a.closest('.exp-entry') === b.closest('.exp-entry');
-      return false;
+      return a.parentElement === b.parentElement; // entry, skill-row, edu-entry
     }
 
     resume.addEventListener('dragstart', e => {
@@ -741,7 +765,7 @@
       }
       const rect = target.getBoundingClientRect();
       const above = e.clientY < rect.top + rect.height / 2;
-      const ind = getIndicator();
+      const ind = getIndicator(level);
       target.parentElement.insertBefore(ind, above ? target : target.nextSibling);
     });
 
